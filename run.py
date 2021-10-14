@@ -16,7 +16,7 @@ def get_open_order():
     open_order = random.randint(0, 2)
     print(f'Открытые заявки: {open_order}')
     return open_order
-я
+
 def create_sell_order(sell_price):
     print(f'Продать доллары по {sell_price}')
 
