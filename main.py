@@ -8,7 +8,11 @@ def print_sum(s):
     print(f'Сумма: {sum(s)}')
 
 with open("file.txt", "r") as f:
-    s = list(map(int, f.read().split()))
-    print_min(s)
-    print_max(s)
-    print_sum(s)
+    try:
+        l = f.read().split()
+        s = list(map(int, l))
+        print_min(s)
+        print_max(s)
+        print_sum(s)
+    except:
+        print(l)
