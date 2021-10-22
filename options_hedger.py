@@ -55,7 +55,7 @@ loop_interval = 1
 
 while True:
     sourse_current_price = client.get_last_trade_price()
-    logger.info('fsourse_current_price: {sourse_current_price}')
+    logger.info(f'sourse_current_price: {sourse_current_price}')
     current_price = sourse_current_price // 10 * 10
     positions_size = get_positions_size()
 
@@ -87,12 +87,12 @@ while True:
 
 
     to_create = orders_sell + orders_buy
-    if len(to_create) > 0:
-        logger.info("Creating %d orders:" % (len(to_create)))
-        for order in to_create:
-            responce = client.create_order(order)
-            logger.info("  %4s %.2f @ %.4f" % (
-                responce.get('side'), responce.get('size'), responce.get('price')))
+    # if len(to_create) > 0:
+    #     logger.info("Creating %d orders:" % (len(to_create)))
+    #     for order in to_create:
+    #         responce = client.create_order(order)
+    #         logger.info("  %4s %.2f @ %.4f" % (
+    #             responce.get('side'), responce.get('size'), responce.get('price')))
 
     # for order in orders_sell + orders_buy:
     #     print(client.create_order(order))
