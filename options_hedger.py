@@ -1,6 +1,7 @@
 import time
 import random
 from exchanges.deribit import DeribitExchangeInterface
+from log import setup_custom_logger
 
 # API_KEY = ""
 # API_SECRET = ""
@@ -13,6 +14,8 @@ API_SECRET = "CJYqU9lP3NKQ51ToC28rbE9acMOwtkv4h8qaS2KV2dk"
 BASE_URL = "https://test.deribit.com"
 API_URL = "/api/v2/"
 INSRUMENT = 'ETH-PERPETUAL'
+
+logger = setup_custom_logger(f'orders_manager.{API_KEY}')
 
 client = DeribitExchangeInterface(API_KEY, API_SECRET, BASE_URL, API_URL, INSRUMENT)
 
@@ -70,8 +73,16 @@ while True:
     if len(orders_sell) > 0:
         orders_sell = [o for o in replace_orders_size(orders_sell, delta_size) if o.get('price') >= current_price]
 
-    for order in orders_sell + orders_buy:
-        print(client.create_order(order))
+    to_create = orders_sell + orders_buy
+    if len(to_create) > 0:
+        logger.info("Creating %d orders:" % (len(to_create)))
+        for order in to_create:
+            responce = client.create_order(order)
+            logger.info("  %4s %.2f @ %.4f" % (
+                responce.get('side'), responce.get('size'), responce.get('price')))
+
+    # for order in orders_sell + orders_buy:
+    #     print(client.create_order(order))
     # print('sell', orders_sell)
     # print('buy', orders_buy)
 
