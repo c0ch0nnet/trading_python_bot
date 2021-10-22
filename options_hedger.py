@@ -51,11 +51,12 @@ def get_positions_size():
     return random.randint(0, 10) * 0.01
 
 strike_price = 4000
-current_price = client.get_last_trade_price() // 10 * 10
-positions_size = get_positions_size()
 loop_interval = 1
 
 while True:
+    current_price = client.get_last_trade_price() // 10 * 10
+    positions_size = get_positions_size()
+
     client.cancel_all_orders()
 
     grid_prices = calculate_orders_grid(strike_price, current_price)
@@ -63,15 +64,25 @@ while True:
     orders_sell = [{'price': -price, 'size': -price * 0.1, 'side': 'sell'} for price in grid_prices[:grid_position]]
     orders_buy = [{'price': price, 'size': price * 0.1, 'side': 'buy'} for price in grid_prices[grid_position:]]
 
+    logger.info(current_price)
+    logger.info(f'sell: {orders_sell}')
+    logger.info(f'buy: {orders_buy }')
+
     grid_position_size = sum([order.get('size') for order in orders_sell])
     position = client.get_positions().get('size')
     position_size = client.get_positions().get('size')
 
     delta_size = grid_position_size - position_size
     if len(orders_buy) > 0:
+        logger.info(replace_orders_size(orders_buy, -delta_size))
         orders_buy = [o for o in replace_orders_size(orders_buy, -delta_size) if o.get('price') <= current_price]
     if len(orders_sell) > 0:
+        logger.info(replace_orders_size(orders_buy, delta_size))
         orders_sell = [o for o in replace_orders_size(orders_sell, delta_size) if o.get('price') >= current_price]
+
+    logger.info(f'sell: {orders_sell}')
+    logger.info(f'buy: {orders_buy }')
+
 
     to_create = orders_sell + orders_buy
     if len(to_create) > 0:
@@ -86,5 +97,5 @@ while True:
     # print('sell', orders_sell)
     # print('buy', orders_buy)
 
-    print('====================')
+    logger.info('====================')
     time.sleep(loop_interval)
