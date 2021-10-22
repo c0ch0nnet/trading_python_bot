@@ -50,7 +50,7 @@ def get_positions_size():
 strike_price = 4000
 current_price = client.get_last_trade_price() // 10 * 10
 positions_size = get_positions_size()
-loop_interval = 10
+loop_interval = 1
 
 while True:
     client.cancel_all_orders()
