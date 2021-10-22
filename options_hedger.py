@@ -77,22 +77,22 @@ while True:
     delta_size = grid_position_size - position_size
     if len(orders_buy) > 0:
         logger.info(replace_orders_size(orders_buy, -delta_size))
-        orders_buy = [o for o in replace_orders_size(orders_buy, -delta_size) if o.get('price') <= current_price]
+        orders_buy = [o for o in replace_orders_size(orders_buy, -delta_size) if o.get('price') <= current_price + 10]
     if len(orders_sell) > 0:
         logger.info(replace_orders_size(orders_buy, delta_size))
-        orders_sell = [o for o in replace_orders_size(orders_sell, delta_size) if o.get('price') >= current_price]
+        orders_sell = [o for o in replace_orders_size(orders_sell, delta_size) if o.get('price') >= current_price - 10]
 
     logger.info(f'sell: {orders_sell}')
     logger.info(f'buy: {orders_buy }')
 
 
     to_create = orders_sell + orders_buy
-    # if len(to_create) > 0:
-    #     logger.info("Creating %d orders:" % (len(to_create)))
-    #     for order in to_create:
-    #         responce = client.create_order(order)
-    #         logger.info("  %4s %.2f @ %.4f" % (
-    #             responce.get('side'), responce.get('size'), responce.get('price')))
+    if len(to_create) > 0:
+        logger.info("Creating %d orders:" % (len(to_create)))
+        for order in to_create:
+            responce = client.create_order(order)
+            logger.info("  %4s %.2f @ %.4f" % (
+                responce.get('side'), responce.get('size'), responce.get('price')))
 
     # for order in orders_sell + orders_buy:
     #     print(client.create_order(order))
