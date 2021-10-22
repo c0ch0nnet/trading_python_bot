@@ -1,0 +1,6 @@
+version: '3'
+
+services:
+
+  money_printer:
+    image: assassinen/grid_bot_client:latest
