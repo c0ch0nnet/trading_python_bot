@@ -54,7 +54,9 @@ strike_price = 4000
 loop_interval = 1
 
 while True:
-    current_price = client.get_last_trade_price() // 10 * 10
+    sourse_current_price = client.get_last_trade_price()
+    logger.info('fsourse_current_price: {sourse_current_price}')
+    current_price = sourse_current_price // 10 * 10
     positions_size = get_positions_size()
 
     client.cancel_all_orders()
