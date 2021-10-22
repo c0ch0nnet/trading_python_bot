@@ -113,7 +113,7 @@ class DeribitExchangeInterface:
             'instrument_name': self.instrument,
             'amount': order['size'],
             'price': order['price'],
-            'post_only': 'true',
+            # 'post_only': 'true',
             'time_in_force': 'good_til_cancelled',
             'type': 'limit',
         }
