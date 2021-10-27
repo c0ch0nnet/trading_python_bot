@@ -16,7 +16,6 @@ API_URL = "/api/v2/"
 INSRUMENT = 'ETH-PERPETUAL'
 
 logger = setup_custom_logger(f'orders_manager.{API_KEY}')
-
 client = DeribitExchangeInterface(API_KEY, API_SECRET, BASE_URL, API_URL, INSRUMENT)
 
 
@@ -39,6 +38,45 @@ def calculate_grid_positions(strike_price, current_price):
         optional_size = optional_size if optional_size % 1 == 0 else optional_size + 0.5
         return mandatory_size, optional_size - mandatory_size
 
+def update_by_positions(calculate_mandatory_size, calculate_optional_size, positions_size):
+    if positions_size < calculate_mandatory_size + calculate_optional_size:
+        mandatory_size = calculate_mandatory_size - positions_size
+        if mandatory_size < 0:
+            optional_size = calculate_optional_size + mandatory_size
+            mandatory_size = 0
+        else:
+            optional_size = calculate_optional_size
+    elif positions_size > calculate_mandatory_size + calculate_optional_size:
+        mandatory_size = calculate_mandatory_size + calculate_optional_size - positions_size
+        if mandatory_size > 0:
+            mandatory_size = 0
+            optional_size = calculate_optional_size - mandatory_size - positions_size
+        else:
+            optional_size = 0
+    else:
+        optional_size, mandatory_size = 0, 0
+    return optional_size, mandatory_size
+
+def create_orders_by_size(current_price, size, mandatory=False):
+    if size < 0:
+        order = {'price': current_price - 5, 'size': -size, 'side': 'sell'}
+    elif size > 0:
+        order = {'price': current_price + 5, 'size': size, 'side': 'buy'}
+    else:
+        order = {}
+    if mandatory and 'price' in order.keys():
+        order['post_only'] = False
+    return order
+
+def create_orders(current_price, optional_size, mandatory_size):
+    to_create = []
+    to_create_optional = create_orders_by_size(current_price, optional_size)
+    to_create_mandatory = create_orders_by_size(current_price, mandatory_size, True)
+    if to_create_optional != {}:
+        to_create.append(to_create_optional)
+    if to_create_mandatory != {}:
+        to_create.append(to_create_mandatory)
+    return to_create
 
 # def calculate_orders_grid(strike_price, current_price):
 #     delta_grid = 50
@@ -75,103 +113,84 @@ strike_price = 4000
 loop_interval = 10
 
 
-for current_price in range(3945, 4055):
-    positions_size = 1190 + 398 - 1
+# for current_price in range(0,1):
+# for current_price in range(4030, 4031):
+#     current_price = 4003.29
+#     positions_size = -1.0
+#     calculate_mandatory_size, calculate_optional_size = calculate_grid_positions(strike_price, current_price)
+#     optional_size, mandatory_size = update_by_positions(calculate_mandatory_size, calculate_optional_size, positions_size)
+#     to_create = create_orders(current_price, optional_size, mandatory_size)
+#
+#     print(to_create)
+#
+#     print(f'{current_price:7.0f} '
+#           f'{optional_size:7.0f} '
+#           f'{mandatory_size:7.0f} '
+#           f'{calculate_optional_size:7.0f} '
+#           f'{calculate_mandatory_size:7.0f} '
+#           f'{calculate_optional_size + calculate_mandatory_size:7.0f} '
+#           f'{positions_size:7.0f}')
+#     # to_create_optional = {order for order in create_orders(current_price, optional_size) if order.get('price') is not None}
+#     print()
+
+
+# sourse_open_orders = client.get_open_orders()
+
+# open_orders = [{'size': order.get('size'),
+#                 'price': order.get('price'),
+#                 'side': order.get('side')} for order in client.get_open_orders()]
+#
+# to_create = [{'size': order.get('size'),
+#                'price': order.get('price'),
+#                'side': order.get('side')} for order in calc_orders
+#              if {'size': order.get('size'),
+#                  'price': order.get('price'),
+#                  'side': order.get('side')} not in open_orders]
+#
+# calc_orders = [{'size': order.get('size'),
+#                 'price': order.get('price'),
+#                 'side': order.get('side')} for order in calc_orders]
+# to_cancel = [order.get('order_id') for order in sourse_open_orders
+#              if {'size': order.get('size'),
+#                  'price': order.get('price'),
+#                  'side': order.get('side')} not in calc_orders]
+
+# if len(to_cancel) > 0:
+#     logger.info("Canceling %d orders:" % (len(to_cancel)))
+#     for order in to_cancel:
+#         logger.info(f"  {order}")
+#         client.cancel_order(order)
+
+
+while True:
+    current_price = client.get_last_trade_price()
+    positions_size = client.get_positions().get('size')
+    client.cancel_all_orders()
+
     calculate_mandatory_size, calculate_optional_size = calculate_grid_positions(strike_price, current_price)
+    optional_size, mandatory_size = update_by_positions(calculate_mandatory_size, calculate_optional_size, positions_size)
+    to_create = create_orders(current_price, optional_size, mandatory_size)
 
-    optional_size, mandatory_size = 0, 0
-
-    if positions_size < calculate_mandatory_size + calculate_optional_size:
-        mandatory_size = calculate_mandatory_size - positions_size
-        if mandatory_size < 0:
-            optional_size = calculate_optional_size + mandatory_size
-            mandatory_size = 0
-        else:
-            optional_size = calculate_optional_size
-    elif positions_size > calculate_mandatory_size + calculate_optional_size:
-        mandatory_size = calculate_mandatory_size + calculate_optional_size - positions_size
-        if mandatory_size > 0:
-            mandatory_size = 0
-            optional_size = calculate_optional_size - mandatory_size - positions_size
-        else:
-            optional_size = 0
-
-    print(f'{current_price:7.0f} '
-          f'{optional_size:7.0f} '
-          f'{mandatory_size:7.0f} '
-          f'{calculate_optional_size:7.0f} '
-          f'{calculate_mandatory_size:7.0f} '
-          f'{calculate_optional_size + calculate_mandatory_size:7.0f} '
-          f'{positions_size:7.0f}')
+    logger.info(f'current_price: {current_price}')
+    logger.info(f'positions_size: {positions_size}')
+    logger.info(f'strike_price: {strike_price}')
+    logger.info(f'optional_size: {optional_size}')
+    logger.info(f'mandatory_size: {mandatory_size}')
 
 
+    logger.info("calculated orders grid:")
+    for order in to_create:
+        logger.info("  %4s %.2f @ %.4f" % (
+            order.get('side'), order.get('size'), order.get('price')))
 
-# while True:
-#     current_price = client.get_last_trade_price()
-#     logger.info(f'current_price: {current_price}')
-#     positions_size = get_positions_size()
-#     # client.cancel_all_orders()
-#
-#     grid_prices = calculate_orders_grid(strike_price, current_price)
-#     grid_position = len([order for order in grid_prices if order < 0])
-#     orders_sell = [{'price': -price, 'size': -price * 0.1, 'side': 'sell'} for price in grid_prices[:grid_position]]
-#     orders_buy = [{'price': price, 'size': price * 0.1, 'side': 'buy'} for price in grid_prices[grid_position:]]
-#
-#     grid_position_size = sum([order.get('size') for order in orders_sell])
-#     position = client.get_positions().get('size')
-#     position_size = client.get_positions().get('size')
-#
-#     delta_size = grid_position_size - position_size
-#     # if len(orders_buy) > 0:
-#     #     logger.info(replace_orders_size(orders_buy, -delta_size))
-#     #     orders_buy = replace_orders_size(orders_buy, -delta_size)
-#     # if len(orders_sell) > 0:
-#     #     logger.info(replace_orders_size(orders_buy, delta_size))
-#     #     orders_sell = replace_orders_size(orders_sell, delta_size)
-#
-#     orders_buy = replace_orders_size(orders_buy, -delta_size)
-#     orders_sell = replace_orders_size(orders_sell, delta_size)
-#
-#     logger.info("calculated orders grid:")
-#     for order in orders_sell + orders_buy:
-#         logger.info("  %4s %.2f @ %.4f" % (
-#             order.get('side'), order.get('size'), order.get('price')))
-#
-#     calc_orders = orders_sell + orders_buy
-#     sourse_open_orders = client.get_open_orders()
-#
-#     open_orders = [{'size': order.get('size'),
-#                     'price': order.get('price'),
-#                     'side': order.get('side')} for order in client.get_open_orders()]
-#
-#     to_create = [{'size': order.get('size'),
-#                    'price': order.get('price'),
-#                    'side': order.get('side')} for order in calc_orders
-#                  if {'size': order.get('size'),
-#                      'price': order.get('price'),
-#                      'side': order.get('side')} not in open_orders]
-#
-#     calc_orders = [{'size': order.get('size'),
-#                     'price': order.get('price'),
-#                     'side': order.get('side')} for order in calc_orders]
-#     to_cancel = [order.get('order_id') for order in sourse_open_orders
-#                  if {'size': order.get('size'),
-#                      'price': order.get('price'),
-#                      'side': order.get('side')} not in calc_orders]
-#
-#     if len(to_cancel) > 0:
-#         logger.info("Canceling %d orders:" % (len(to_cancel)))
-#         for order in to_cancel:
-#             logger.info(f"  {order}")
-#             client.cancel_order(order)
-#
-#     if len(to_create) > 0:
-#         logger.info("Creating %d orders:" % (len(to_create)))
-#         for order in to_create:
-#             responce = client.create_order(order)
-#             logger.info("  %4s %.2f @ %.4f" % (
-#                 responce.get('side'), responce.get('size'), responce.get('price')))
-#
-#     logger.info('====================')
-#     time.sleep(loop_interval)
+    if len(to_create) > 0:
+        logger.info("Creating %d orders:" % (len(to_create)))
+        for order in to_create:
+            responce = client.create_order(order)
+            logger.info("  %4s %.2f @ %.4f" % (
+                responce.get('side'), responce.get('size'), responce.get('price')))
+
+    logger.info('====================')
+    time.sleep(loop_interval)
+
 
