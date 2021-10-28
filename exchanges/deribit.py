@@ -49,12 +49,21 @@ class DeribitExchangeInterface:
                             f"{response.text}")
         return response.json()['result']
 
-    def get_positions(self):
+    def get_position(self):
         method = 'private/get_position'
         params = {'instrument_name': self.instrument}
         result = self._post(method, params)
         return {'average_price': result.get('average_price'),
                 'size': result.get('size', 0)}
+
+    def get_positions(self, kind='option'):
+        method = 'private/get_positions'
+        params = {'currency': self.instrument[:3], 'kind': kind}
+        result = self._post(method, params)
+        return result if len(result) > 0 else [{}]
+
+    def get_action_options_strikes(self):
+        return [int(position.get('instrument_name').split('-')[2]) for position in self.get_positions()]
 
     def get_get_mark_price(self):
         method = 'public/get_book_summary_by_instrument'
