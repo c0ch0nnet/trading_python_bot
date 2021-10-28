@@ -40,14 +40,17 @@ def get_position():
     return position_size, position_price
 
 def get_open_order():
+    headers['Authorization'] = 'Bearer {}'.format(_auth())
     open_order = random.randint(0, 2)
     print(f'Открытые заявки: {open_order}')
     return open_order
 
 def create_sell_order(sell_price):
+    headers['Authorization'] = 'Bearer {}'.format(_auth())
     print(f'Продать доллары по {sell_price}')
 
 def create_buy_order(buy_price):
+    headers['Authorization'] = 'Bearer {}'.format(_auth())
     print(f'Купить доллары по {buy_price}')
 
 

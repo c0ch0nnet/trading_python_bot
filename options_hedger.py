@@ -163,9 +163,12 @@ loop_interval = 10
 
 
 while True:
-    current_price = client.get_last_trade_price()
-    positions_size = client.get_positions().get('size')
-    client.cancel_all_orders()
+    try:
+        current_price = client.get_last_trade_price()
+        positions_size = client.get_positions().get('size')
+        client.cancel_all_orders()
+    except Exception as r:
+        logger.info(f'error: {r}')
 
     calculate_mandatory_size, calculate_optional_size = calculate_grid_positions(strike_price, current_price)
     optional_size, mandatory_size = update_by_positions(calculate_mandatory_size, calculate_optional_size, positions_size)
@@ -186,9 +189,12 @@ while True:
     if len(to_create) > 0:
         logger.info("Creating %d orders:" % (len(to_create)))
         for order in to_create:
-            responce = client.create_order(order)
-            logger.info("  %4s %.2f @ %.4f" % (
-                responce.get('side'), responce.get('size'), responce.get('price')))
+            try:
+                responce = client.create_order(order)
+                logger.info("  %4s %.2f @ %.4f" % (
+                    responce.get('side'), responce.get('size'), responce.get('price')))
+            except Exception as r:
+                logger.info(f'error: {r}')
 
     logger.info('====================')
     time.sleep(loop_interval)

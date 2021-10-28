@@ -12,8 +12,6 @@ class Deribit():
         self.secret = secret
         self.headers = {'Content-Type': 'application/json'}
 
-    url = "https://test.deribit.com/api/v2/"
-
     def _auth(self):
         method = 'public/auth'
         params = {
