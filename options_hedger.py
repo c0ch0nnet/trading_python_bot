@@ -109,7 +109,7 @@ def create_orders(current_price, optional_size, mandatory_size):
 # def get_positions_size():
 #     return random.randint(0, 10) * 0.01
 
-strike_price = 4000
+strike_price = 4150
 loop_interval = 10
 
 
