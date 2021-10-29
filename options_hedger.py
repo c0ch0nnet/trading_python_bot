@@ -106,12 +106,15 @@ while True:
     else:
         to_create = [create_orders_by_size(current_price, -positions_size, mandatory=True)]
 
-    logger.info("calculated orders grid:")
-    for order in to_create:
-        logger.info("  %4s %.2f @ %.4f" % (
-            order.get('side'), order.get('size'), order.get('price')))
+    if len(to_create) > 0 and to_create != [{}]:
+        logger.info("calculated orders grid:")
+        for order in to_create:
+            logger.info("  %4s %.2f @ %.4f" % (
+                order.get('side'), order.get('size'), order.get('price')))
+    else:
+        logger.info(f'strike_price: {strikes_price}')
 
-    if len(to_create) > 0:
+    if len(to_create) > 0 and to_create != [{}]:
         logger.info("Creating %d orders:" % (len(to_create)))
         for order in to_create:
             try:
