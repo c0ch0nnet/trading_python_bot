@@ -63,7 +63,10 @@ class DeribitExchangeInterface:
         return result if len(result) > 0 else [{}]
 
     def get_action_options_strikes(self):
-        return [int(position.get('instrument_name').split('-')[2]) for position in self.get_positions()]
+        try:
+            return [int(position.get('instrument_name').split('-')[2]) for position in self.get_positions()]
+        except:
+            return []
 
     def get_get_mark_price(self):
         method = 'public/get_book_summary_by_instrument'
