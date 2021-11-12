@@ -2,15 +2,8 @@
 import re
 
 class RomanNumber():
-    def __init__(self, value):
-        if self.is_roman(value):
-            self.rov_value = value
-        else:
-            print('ошибка')
-            self.rov_value = None
-
-    @classmethod
-    def is_roman(self, num):
+    @staticmethod
+    def is_roman(num):
         pattern = re.compile(r"""   ^M{0,3}
                                     (CM|CD|D?C{0,3})?
                                     (XC|XL|L?X{0,3})?
@@ -19,6 +12,13 @@ class RomanNumber():
         if re.match(pattern, num):
             return True
         return False
+
+    def __init__(self, value):
+        if self.is_roman(value):
+            self.rov_value = value
+        else:
+            print('ошибка')
+            self.rov_value = None
 
     def decimal_number(self):
         if self.rov_value is None:
