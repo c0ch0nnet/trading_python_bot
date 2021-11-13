@@ -1,3 +1,4 @@
+# контакты для связи: @vananova - telegramm
 
 import re
 
@@ -22,7 +23,8 @@ class RomanNumber():
 
     def decimal_number(self):
         if self.rov_value is None:
-            pass
+            print('ошибка')
+            return None
         result = 0
         f = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}
         i = 0
