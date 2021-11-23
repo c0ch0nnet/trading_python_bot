@@ -9,6 +9,18 @@ from log import setup_custom_logger
 # API_URL = "/api/v2/"
 # INSRUMENT = 'ETH-PERPETUAL'
 
+dali_tcs = 't.PTbyAbOqAnEhvcJExoHG_tTtQyPBRmdaUHCNMKrqCL5627Wq5GDmJC49dSGRla2gvferzwT8r_QtiOBEG-zzww'
+# {
+#   "trackingId": "af9ec87804088a71",
+#   "payload": {
+#     "brokerAccountType": "Tinkoff",
+#     "brokerAccountId": "SB18390081"
+#   },
+#   "status": "Ok"
+# }
+
+# curl -X GET "https://api-invest.tinkoff.ru/openapi/sandbox/market/candles?figi=BBG333333333&from=2021-08-18T18%3A38%3A33%2B03%3A00&to=2021-08-19T18%3A38%3A33%2B03%3A00&interval=1min" -H "accept: application/json" -H "Authorization: Bearer t.PTbyAbOqAnEhvcJExoHG_tTtQyPBRmdaUHCNMKrqCL5627Wq5GDmJC49dSGRla2gvferzwT8r_QtiOBEG-zzww"
+
 API_KEY = "aqPeRlFO"
 API_SECRET = "CJYqU9lP3NKQ51ToC28rbE9acMOwtkv4h8qaS2KV2dk"
 BASE_URL = "https://test.deribit.com"

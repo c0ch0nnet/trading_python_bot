@@ -49,16 +49,13 @@ def game(player_money):
             print(f"Black Jack!!! Игрок победил \n {player_money=}")
             return
         else:
-            player_choice = input("еще(1)/достаточно(0): ")
+            player_choice = input("еще(1)/достаточно(любая клавиша): ")
             if player_choice == "1":
                 # Раздаем еще одну карту
                 player_cards += deck.draw(1)
                 print(f'Player cards  now: {player_cards}')
-            elif player_choice == "0":
-                # Заканчиваем добирать карты
-                break
             else:
-                print(f'не допустимое действие')
+                break
 
     print("Диллер добирает карты")
     while True:  # дилер начинает набирать карты.

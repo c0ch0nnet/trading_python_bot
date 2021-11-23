@@ -1,7 +1,9 @@
+import jsonpickle
 from bj.iBank_2 import Account, CreditAccount
 
 
 EMPLOYEE_PASSWORD = "123"
+ACCOUNTS_FILE = 'accounts'
 
 
 def close_account():
@@ -81,7 +83,7 @@ def create_new_account():
 def create_new_credit_acc():
     print("Укажите данные клиента")
     name = input("Имя:")
-    passport = input("Номер паспорта: ")
+    passport = input("Номеч паспорта: ")
     phone_number = input("Номер телефона: ")
     negative_limit = input('Введите допустимый отрицательный баланс:')
     account = CreditAccount(name, passport, phone_number, negative_limit)
@@ -169,6 +171,9 @@ def start_menu():
 
         choice = input(":")
         if choice == "3":
+            with open(ACCOUNTS_FILE, 'w') as out:
+                jsonpickle.set_encoder_options("json", indent=2)
+                out.write(jsonpickle.encode(accounts))
             break
         elif choice == "1":
             if employee_access():
@@ -186,6 +191,7 @@ def start_menu():
 
 
 if __name__ == "__main__":
-    accounts = []
+    with open(ACCOUNTS_FILE) as f:
+        accounts = jsonpickle.decode(f.read())
     credit_accounts = []
     start_menu()
