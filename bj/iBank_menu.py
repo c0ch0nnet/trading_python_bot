@@ -76,8 +76,11 @@ def create_new_account():
     name = input("Имя:")
     passport = input("Номер паспорта: ")
     phone_number = input("Номер телефона: ")
-    account = Account(name, passport, phone_number)
-    accounts.append(account)
+    try:
+        account = Account(name, passport, phone_number)
+        accounts.append(account)
+    except ValueError as err:
+        print(f"Не те данные: {err}")
 
 
 def create_new_credit_acc():
@@ -92,7 +95,7 @@ def create_new_credit_acc():
 
 def client_menu(account):
     while True:
-        print("***********Меню клиента <Иванов И.И.>*************")
+        print(f"***********Меню клиента <{account.name}>*************")
         print("1. Состояние счета")
         print("2. Пополнить счет")
         print("3. Снять со счета")
@@ -152,9 +155,12 @@ def client_access(accounts):
     Или возвращает False, если аккаунт не найден
     """
     try:
-        passport = int(input("Номер паспорта: "))
+        passport = input("Номер паспорта: ")
     except ValueError:
         return False
+    # acc = [account for account in accounts if passport == account.passport8]
+    # return acc[0] if len(acc) > 1 else False
+
     for account in accounts:
         if passport == account.passport8:
             return account
@@ -187,11 +193,14 @@ def start_menu():
             else:
                 print("Указан несуществующий пасспорт, укажите роль и повторите попытку...")
         else:
-            print("Указан некорректный пункт меню, повторите выбор...")
+            print("Указан н1екорректный пункт меню, повторите выбор...")
 
 
 if __name__ == "__main__":
-    with open(ACCOUNTS_FILE) as f:
-        accounts = jsonpickle.decode(f.read())
+    try:
+        with open(ACCOUNTS_FILE) as f:
+            accounts = jsonpickle.decode(f.read())
+    except FileNotFoundError:
+        accounts = []
     credit_accounts = []
     start_menu()
