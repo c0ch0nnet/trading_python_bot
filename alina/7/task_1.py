@@ -1,3 +1,5 @@
+from pprint import pprint
+
 def read_recipe(f):
     dish_name = f.readline().strip()
     count_of_ingredients = int(f.readline().strip())
@@ -16,14 +18,14 @@ with open('recipes.txt') as f_read:
         if line == '':
             break
 
-print("cook_book = {")
-for k, v in cook_book.items():
-    print(f"  '{k}': [")
-    for i in v:
-        print(f'    {i}')
-    print(f"    ],")
-print("  }")
-
+# print("cook_book = {")
+# for k, v in cook_book.items():
+#     print(f"  '{k}': [")
+#     for i in v:
+#         print(f'    {i}')
+#     print(f"    ],")
+# print("  }")
+pprint(cook_book)
 
 def get_shop_list_by_dishes(dishes, person_count):
     products_list = []
