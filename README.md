@@ -1,5 +1,6 @@
 ## Контакты:
 email: assassinen@ya.ru
+telegram: @vananova
 
 ## О чем речь:
 Будем писать торгового робота на питоне.
