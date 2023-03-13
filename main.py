@@ -5,8 +5,9 @@
 last_price = 90
 step = 1
 buy_price = last_price - step
+position_price = buy_price
 margin = 5
-sell_price = buy_price + margin
+sell_price = position_price + margin
 position_size = 1
 
 if position_size > 0:
