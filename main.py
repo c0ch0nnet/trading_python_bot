@@ -1,7 +1,6 @@
 import random
 import time
 
-
 def get_last_price():
     return random.randint(69, 90)
 
