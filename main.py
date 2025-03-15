@@ -1,33 +1,18 @@
-import random
 import time
+from deribit import (get_last_price,
+                     get_position,
+                     get_open_order,
+                     create_sell_order,
+                     create_buy_order)
 
-def get_last_price():
-    return random.randint(69, 90)
-
-
-def get_position():
-    return random.randint(0, 1), random.randint(69, 90)
-
-
-def get_open_order():
-    return random.randint(0, 2)
-
-
-def create_sell_order(price):
-    print(f'Продать доллары по {price}')
-
-
-def create_buy_order(price):
-    print(f'Купить доллары по {price}')
+step = 1
+margin = 100
+sleep = 5
 
 
 def _log_message(message):
     print(message)
 
-
-step = 1
-margin = 5
-sleep = 15
 
 while True:
     time.sleep(sleep)
