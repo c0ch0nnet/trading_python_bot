@@ -7,7 +7,7 @@ from deribit import (get_last_price,
 
 step = 1
 margin = 100
-sleep = 5
+sleep = 20
 
 
 def _log_message(message):
